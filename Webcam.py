@@ -1,3 +1,4 @@
+#Import packages
 import cv2
 import os
 import logging as log
@@ -6,10 +7,13 @@ from time import sleep
 import numpy as np
 import tensorflow
 from keras.models import load_model
+
+#Load the pretrained model 'masknet.h5'
 model = load_model('masknet.h5')
 print(dt.datetime.now())
 
 def detect(im):
+    '''input an image and return the prediction of whether a mask is present or not'''
     try:
         im=cv2.resize(im,(128,128))
     except:
@@ -19,6 +23,7 @@ def detect(im):
     prediction = model.predict(img_array)[0]
     prediction = np.argmax(prediction)
     return prediction
+#Create directories for classified images
 try:  
     if not os.path.exists('D:\dataset\mask_on'): 
         os.makedirs('D:\dataset\mask_on')
@@ -30,11 +35,14 @@ try:
 except OSError: 
     print('OS Error')
 
+    #detect faces
 cascPath = "haarcascade_frontalface_default.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 log.basicConfig(filename='webcam.log',level=log.INFO)
 mask_on_count=0
 mask_off_count=0
+
+#openthe webcam to detect
 video_capture = cv2.VideoCapture(1)
 anterior = 0
 
@@ -88,6 +96,7 @@ while True:
         cv2.imshow('Video', frame)
         sleep(5)
 
+    #break from the loop when press q
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
